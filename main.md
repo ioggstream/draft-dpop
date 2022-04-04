@@ -652,19 +652,14 @@ protected resource to query an authorization server about the active
 state of an access token as well as to determine metainformation
 about the token.
 
-For a DPoP-bound access token, the hash of the public key to which the token 
-is bound is conveyed to the protected resource as metainformation in a token
-introspection response. The hash is conveyed using the same `cnf` content with 
-`jkt` member structure as the JWK Thumbprint confirmation method, described in
-(#jwk-thumb-jwt), as a top-level member of the
-introspection response JSON. Note that the resource server
-does not send a DPoP proof with the introspection request and the authorization 
-server does not validate an access token's DPoP binding at the introspection 
-endpoint. Rather the resource server uses the data of the introspection response
-to validate the access token binding itself locally.
+A client issuing a Token Introspection request for a DPOP-bound access token
+does not need to send a DPoP proof.
+A Token Introspection response for a DPOP-bound access token:
 
-If the `token_type` member is included in the introspection response, it MUST contain
-the value `DPoP`.
+* MUST contain a `cnf` top-level member 
+  embedding a `jkt` JWK Thumbprint member as described in (#jwk-thumb-jwt);
+* MAY contain a `token_type` top-level member.
+  In this case, its value MUST be `DPoP`.
 
 The example introspection request in (#introspect-req) and corresponding response in 
 (#introspect-resp) illustrate an introspection exchange for the example DPoP-bound 
