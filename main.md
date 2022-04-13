@@ -121,9 +121,13 @@ appear in all capitals, as shown here.
 This specification uses the terms "access token", "refresh token",
 "authorization server", "resource server", "authorization endpoint",
 "authorization request", "authorization response", "token endpoint",
-"grant type", "access token request", "access token response", and
-"client" defined by The OAuth 2.0 Authorization Framework [@!RFC6749].
+"grant type", "access token request", "access token response",
+"client", "public client", and "confidential client" defined by The OAuth 2.0 Authorization Framework [@!RFC6749].
 
+The terms "request", "response", "header field", "request URI"
+are imported from [@!RFC7231].
+
+The terms "JOSE" and "JOSE header" are imported from [@!RFC7515].
 
 # Objectives {#objective}
 
@@ -434,7 +438,7 @@ provide a valid DPoP proof JWT in a `DPoP` header when making an access token
 request to the authorization server's token endpoint. This is applicable for all
 access token requests regardless of grant type (including, for example,
 the common `authorization_code` and `refresh_token` grant types but also extension grants
-such as the JWT authorization grant [@RFC7523]). The HTTPS request shown in
+such as the JWT authorization grant [@RFC7523]). The HTTP request shown in
 (#token-request-code) illustrates such an access 
 token request using an authorization code grant with a DPoP proof JWT
 in the `DPoP` header (extra line breaks and whitespace for display purposes only).
@@ -443,7 +447,7 @@ in the `DPoP` header (extra line breaks and whitespace for display purposes only
 ~~~
 POST /token HTTP/1.1
 Host: server.example.com
-Content-Type: application/x-www-form-urlencoded;charset=UTF-8
+Content-Type: application/x-www-form-urlencoded
 DPoP: eyJ0eXAiOiJkcG9wK2p3dCIsImFsZyI6IkVTMjU2IiwiandrIjp7Imt0eSI6Ik
  VDIiwieCI6Imw4dEZyaHgtMzR0VjNoUklDUkRZOXpDa0RscEJoRjQyVVFVZldWQVdCR
  nMiLCJ5IjoiOVZFNGpmX09rX282NHpiVFRsY3VOSmFqSG10NnY5VERWclUwQ2R2R1JE
@@ -502,7 +506,7 @@ a DPoP proof, as shown in the (#token-request-rt) example
 ~~~
 POST /token HTTP/1.1
 Host: server.example.com
-Content-Type: application/x-www-form-urlencoded;charset=UTF-8
+Content-Type: application/x-www-form-urlencoded
 DPoP: eyJ0eXAiOiJkcG9wK2p3dCIsImFsZyI6IkVTMjU2IiwiandrIjp7Imt0eSI6Ik
  VDIiwieCI6Imw4dEZyaHgtMzR0VjNoUklDUkRZOXpDa0RscEJoRjQyVVFVZldWQVdCR
  nMiLCJ5IjoiOVZFNGpmX09rX282NHpiVFRsY3VOSmFqSG10NnY5VERWclUwQ2R2R1JE
@@ -538,9 +542,9 @@ alone, which can improve the security posture even when protected resources are 
 updated to support DPoP. 
 
 If a client receives a different `token_type` value than `DPoP` in the response, the
-access token protection provided by DPoP is not given. The client MUST discard the response in this
-case if this protection is deemed important for the security of the
-application and MAY continue as in a regular OAuth interaction otherwise.
+access token protection provided by DPoP is not given. The client must discard the response in this
+case, if this protection is deemed important for the security of the
+application; otherwise, it may continue as in a regular OAuth interaction.
 
 Refresh tokens issued to confidential clients (those having
 established authentication credentials with the authorization server) 
@@ -639,7 +643,10 @@ Figure: JWT containing a JWK SHA-256 Thumbprint Confirmation {#cnf-claim-jwt}
   "iss":"https://server.example.com",
   "nbf":1562262611,
   "exp":1562266216,
-  "cnf":{"jkt":"0ZcOCORZNYy-DWpqq30jZyJGHTN0d2HglBV3uiguA4I"}
+  "cnf":
+  {
+    "jkt":"0ZcOCORZNYy-DWpqq30jZyJGHTN0d2HglBV3uiguA4I"
+  }
 }
 ```
 !---
@@ -689,7 +696,10 @@ Cache-Control: no-store
   "iss": "https://server.example.com",
   "nbf": 1562262611,
   "exp": 1562266216,
-  "cnf": {"jkt": "0ZcOCORZNYy-DWpqq30jZyJGHTN0d2HglBV3uiguA4I"}
+  "cnf":
+  {
+    "jkt": "0ZcOCORZNYy-DWpqq30jZyJGHTN0d2HglBV3uiguA4I"
+  }
 }
 ```
 !---
@@ -861,7 +871,7 @@ would most presumably accept a DPoP-bound access token as a bearer token
 says that other parameters might be present while placing no functional 
 requirements on their presence, and [@RFC6750] is effectively silent on
 the content of the access token as it relates to validity).  As such, a 
-client MAY send a DPoP-bound access token using the `Bearer` scheme upon 
+client can send a DPoP-bound access token using the `Bearer` scheme upon
 receipt of a `WWW-Authenticate: Bearer` challenge from a protected resource
 (or if it has prior such knowledge about the capabilities of the protected
 resource). The effect of this likely simplifies the logistics of phased 
@@ -1454,6 +1464,7 @@ Nicolas Mora,
 Rob Otto,
 Aaron Parecki,
 Michael Peck,
+Roberto Polli,
 Paul Querna,
 Justin Richer,
 Filip Skokan,
@@ -1473,6 +1484,8 @@ workshop (Ralf Kusters, Guido Schmitz).
    [[ To be removed from the final specification ]]
 
   -08
+
+* Editorial updates from WGLC feedback
 
   -07
 
